@@ -4,8 +4,7 @@ window.SOJO_LOOKUP_CONFIG = {
   LOCATION_NAME: "Langhorne - PA",
   LOCATION_SLUG: "langhorne-pa",
   EXCEL_SOURCES: [
-    "data/current-sds-list.xlsx",
-    "https://raw.githubusercontent.com/dsrogerssojo/SojoChemicalProductLookup/main/data/current-sds-list.xlsx"
+    "https://sojoindustries0-my.sharepoint.com/:x:/g/personal/david_rogers_sojoindustries_com/IQALcs11HBfaQJlCCBnUoTqSAeroPcHXsll9JZToDIbz4bI?e=2wMDUt"
   ],
   CSV_FALLBACK_PATH: "data/langhorne-sds.csv",
   SDS_SHEET_NAME: "SDS Info",
