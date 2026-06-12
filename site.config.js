@@ -4,7 +4,7 @@ window.SOJO_LOOKUP_CONFIG = {
   LOCATION_NAME: "Langhorne - PA",
   LOCATION_SLUG: "langhorne-pa",
   EXCEL_SOURCES: [
-    "https://sojoindustries0-my.sharepoint.com/:x:/g/personal/david_rogers_sojoindustries_com/IQALcs11HBfaQJlCCBnUoTqSAeroPcHXsll9JZToDIbz4bI?e=2wMDUt"
+    "https://sojoindustries0-my.sharepoint.com/:x:/g/personal/david_rogers_sojoindustries_com/IQALcs11HBfaQJlCCBnUoTqSAelYDfvy95TBd_PkbMmgdHw?e=hlZD6G"
   ],
   CSV_FALLBACK_PATH: "",
   SDS_SHEET_NAME: "SDS Info",
