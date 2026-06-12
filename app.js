@@ -55,26 +55,30 @@
       }
     }
 
-    try {
-      const fallbackPath = withCacheBuster(config.CSV_FALLBACK_PATH || "data/langhorne-sds.csv");
-      const response = await fetch(fallbackPath, { cache: "no-store" });
-      if (!response.ok) throw new Error(`fallback CSV returned ${response.status}`);
-      const text = await response.text();
-      const rows = parseCsv(text);
-      const records = normalizeRows(rows);
-      state.records = records;
-      state.sourceLabel = "bundled CSV fallback";
-      state.sourceStatus = `Live Excel could not be read, so ${records.length} fallback records were loaded.`;
-      state.loadedAt = new Date();
-      console.warn("Live Excel load failed:", errors);
-      return;
-    } catch (fallbackError) {
-      state.records = [];
-      state.sourceLabel = "none";
-      state.sourceStatus = `No spreadsheet data could be loaded. ${fallbackError.message || fallbackError}`;
-      state.loadedAt = new Date();
-      console.error("All spreadsheet loading failed:", errors, fallbackError);
+    if (config.CSV_FALLBACK_PATH) {
+      try {
+        const fallbackPath = withCacheBuster(config.CSV_FALLBACK_PATH);
+        const response = await fetch(fallbackPath, { cache: "no-store" });
+        if (!response.ok) throw new Error(`fallback CSV returned ${response.status}`);
+        const text = await response.text();
+        const rows = parseCsv(text);
+        const records = normalizeRows(rows);
+        state.records = records;
+        state.sourceLabel = "bundled CSV fallback";
+        state.sourceStatus = `Live Excel could not be read, so ${records.length} fallback records were loaded.`;
+        state.loadedAt = new Date();
+        console.warn("Live Excel load failed:", errors);
+        return;
+      } catch (fallbackError) {
+        errors.push(`fallback CSV: ${fallbackError.message || fallbackError}`);
+      }
     }
+
+    state.records = [];
+    state.sourceLabel = "none";
+    state.sourceStatus = "The live Excel spreadsheet could not be loaded. Check that the SharePoint link allows public direct download.";
+    state.loadedAt = new Date();
+    console.error("All spreadsheet loading failed:", errors);
   }
 
   function buildExcelSourceCandidates(rawSources) {
