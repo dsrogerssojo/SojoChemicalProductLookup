@@ -6,7 +6,7 @@ window.SOJO_LOOKUP_CONFIG = {
   EXCEL_SOURCES: [
     "https://sojoindustries0-my.sharepoint.com/:x:/g/personal/david_rogers_sojoindustries_com/IQALcs11HBfaQJlCCBnUoTqSAeroPcHXsll9JZToDIbz4bI?e=2wMDUt"
   ],
-  CSV_FALLBACK_PATH: "data/langhorne-sds.csv",
+  CSV_FALLBACK_PATH: "",
   SDS_SHEET_NAME: "SDS Info",
   INVENTORY_SHEET_NAME: "Inventory",
   EMERGENCY_PHONE: "911",
