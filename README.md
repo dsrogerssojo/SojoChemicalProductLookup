@@ -2,7 +2,7 @@
 
 Static, QR-ready chemical product/SDS lookup for an individual Sojo location.
 
-This version uses **Option A**: the public lookup page loads the current Excel workbook directly from a shareable SharePoint/Excel link every time the page opens.
+This version uses the **Power Automate CSV bridge** workaround: SharePoint Excel remains the editable source of truth, while Power Automate publishes the current rows to `data/sds.csv` in this repo.
 
 ## How it works
 
@@ -11,20 +11,19 @@ User scans QR code
   ↓
 Static lookup website opens
   ↓
-Browser fetches the configured SharePoint Excel workbook with cache-busting
+Browser fetches data/sds.csv with cache-busting
   ↓
-The SDS Info sheet is parsed in the browser
-  ↓
-Search results render from the latest spreadsheet contents
+Search results render from the latest published CSV
 ```
 
-There is no required backend, database, or public submit form.
+The public website no longer tries to fetch SharePoint directly. That avoids SharePoint login, preview-page, and browser CORS issues.
 
 ## Current build
 
 - Location: `Langhorne - PA`
-- Live spreadsheet source: configured in `site.config.js`
-- Sheet used by the website: `SDS Info`
+- Website data source: `data/sds.csv`
+- SharePoint publishing bridge: Power Automate
+- Setup guide: `docs/power-automate-sharepoint-to-github.md`
 
 ## Updating the SDS list
 
@@ -32,15 +31,14 @@ A location leader should:
 
 1. Open the shared Excel workbook in SharePoint/Excel.
 2. Add or edit products on the `SDS Info` sheet.
-3. Keep the column names the same.
-4. Save the workbook.
-5. Scan the QR code or refresh the page.
+3. Save the workbook.
+4. Power Automate updates `data/sds.csv` in GitHub.
+5. GitHub Pages redeploys.
+6. The QR website shows the updated list.
 
-The site attempts to fetch the workbook fresh on every load using a timestamped URL, so the browser should not reuse stale cached data.
+## Required columns
 
-## Required sheet columns
-
-The app currently looks for these headers on the `SDS Info` sheet:
+The app currently looks for these headers:
 
 ```text
 Product Name
@@ -57,16 +55,7 @@ HFRP Info
 External Link To SDS
 ```
 
-## Important SharePoint access note
-
-The SharePoint link must allow the public website visitor's browser to download the workbook. If SharePoint returns a Microsoft sign-in page or blocks browser fetching, the app will show an error instead of records. In that case, the link needs to be changed to a direct-download/public workbook link, or the rollout should switch to a small Power Automate publishing bridge.
-
 ## Deploying
-
-Recommended free options:
-
-- GitHub Pages from this repo
-- Cloudflare Pages connected to this repo
 
 For GitHub Pages:
 
@@ -81,9 +70,7 @@ For another location:
 
 1. Copy/fork this repo or create a new repo from it.
 2. Edit `site.config.js`.
-3. Change:
-   - `LOCATION_NAME`
-   - `LOCATION_SLUG`
-   - the SharePoint/Excel URL inside `EXCEL_SOURCES`
-4. Deploy that copy.
-5. Generate that location's QR code from the deployed URL.
+3. Change `LOCATION_NAME` and `LOCATION_SLUG`.
+4. Create a Power Automate flow for that location's SharePoint workbook.
+5. Deploy that copy.
+6. Generate that location's QR code from the deployed URL.
