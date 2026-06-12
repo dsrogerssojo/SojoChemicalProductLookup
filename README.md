@@ -1,55 +1,65 @@
 # Sojo Chemical Product Lookup
 
-Static, QR-ready chemical product/SDS lookup for individual Sojo locations.
+Static, QR-ready chemical product/SDS lookup for an individual Sojo location.
 
-This repo is designed so a location leader can maintain the lookup by replacing a spreadsheet instead of using backend forms or a database.
+This version uses **Option A**: the public lookup page loads the current Excel workbook directly from a shareable SharePoint/Excel link every time the page opens.
 
 ## How it works
 
 ```text
-QR code
+User scans QR code
   ↓
-Static lookup site
+Static lookup website opens
   ↓
-Browser fetches latest spreadsheet with cache-busting
+Browser fetches the configured SharePoint Excel workbook with cache-busting
   ↓
-Spreadsheet is parsed in the browser
+The SDS Info sheet is parsed in the browser
   ↓
-Search results appear for anyone who scanned the QR
+Search results render from the latest spreadsheet contents
 ```
 
-There is no required backend and no public submit form.
+There is no required backend, database, or public submit form.
 
 ## Current build
 
 - Location: `Langhorne - PA`
-- Initial live data: `data/langhorne-sds.csv`
-- Preferred live spreadsheet path: `data/current-sds-list.xlsx`
-
-The CSV file was generated from the uploaded Langhorne SDS workbook. The website will use `data/current-sds-list.xlsx` automatically once that file is uploaded to this repo.
+- Live spreadsheet source: configured in `site.config.js`
+- Sheet used by the website: `SDS Info`
 
 ## Updating the SDS list
 
 A location leader should:
 
-1. Open the latest location workbook in Excel.
-2. Add/edit products on the `SDS Info` sheet.
+1. Open the shared Excel workbook in SharePoint/Excel.
+2. Add or edit products on the `SDS Info` sheet.
 3. Keep the column names the same.
-4. In GitHub, upload/replace the workbook at:
+4. Save the workbook.
+5. Scan the QR code or refresh the page.
+
+The site attempts to fetch the workbook fresh on every load using a timestamped URL, so the browser should not reuse stale cached data.
+
+## Required sheet columns
+
+The app currently looks for these headers on the `SDS Info` sheet:
 
 ```text
-data/current-sds-list.xlsx
+Product Name
+Company Name
+Product Code
+Use
+SDS #
+Version #
+Issue Date
+Revision Date
+Supersedes Date
+HAZMAT Chemical Composition
+HFRP Info
+External Link To SDS
 ```
 
-5. Commit the change.
+## Important SharePoint access note
 
-The next QR scan or page refresh will fetch the spreadsheet again with a timestamped URL so the browser does not reuse stale cached data.
-
-## Important note about instant updates
-
-The page is built to refresh from the spreadsheet every time it opens. Once the workbook has been replaced at the same public path, the next QR scan should show the new product without a backend deployment.
-
-If you use GitHub Pages and upload the spreadsheet to the repo, GitHub may still take a short moment to publish the changed file. To reduce delay, `site.config.js` also checks the raw GitHub file URL.
+The SharePoint link must allow the public website visitor's browser to download the workbook. If SharePoint returns a Microsoft sign-in page or blocks browser fetching, the app will show an error instead of records. In that case, the link needs to be changed to a direct-download/public workbook link, or the rollout should switch to a small Power Automate publishing bridge.
 
 ## Deploying
 
@@ -58,7 +68,7 @@ Recommended free options:
 - GitHub Pages from this repo
 - Cloudflare Pages connected to this repo
 
-If using GitHub Pages with the included workflow:
+For GitHub Pages:
 
 1. Go to **Settings → Pages**.
 2. Set the source to **GitHub Actions**.
@@ -74,8 +84,6 @@ For another location:
 3. Change:
    - `LOCATION_NAME`
    - `LOCATION_SLUG`
-   - raw GitHub URL inside `EXCEL_SOURCES`, if needed
-4. Replace `data/current-sds-list.xlsx` with that location's workbook.
-5. Deploy and generate that location's QR code.
-
-See `docs/leader-update-guide.md` for the exact workbook format.
+   - the SharePoint/Excel URL inside `EXCEL_SOURCES`
+4. Deploy that copy.
+5. Generate that location's QR code from the deployed URL.
