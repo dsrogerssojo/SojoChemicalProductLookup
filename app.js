@@ -101,7 +101,7 @@
     }
     renderLoading();
     await loadLatestData();
-    renderDashboardApp();
+    renderLookupApp();
   }
 
   function clearLocation() {
@@ -200,7 +200,7 @@
     app.innerHTML = `
       <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
       <section class="hero"><div class="hero-inner"><div class="hero-copy"><p class="eyebrow">SDS Safety Reference</p><h1>Search SDS Records.</h1><p>Fast lookup for SDS links, product details, hazard indicators, HFRP ratings, and current chemical records for ${escapeHtml(location.name)}.</p><div class="hero-badges"><span class="hero-badge">${state.records.length} records</span><span class="hero-badge">HFRP ratings</span><span class="hero-badge">SDS links</span><span class="hero-badge">Separate data feed</span></div></div><div class="hero-logo-card"><img class="hero-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" /></div></div></section>
-      <main class="main"><section class="search-shell"><div class="search-panel"><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><select id="useFilter" class="select"><option value="">${escapeHtml(shortLocation())}</option>${useOptions()}</select><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>Showing ${escapeHtml(location.name)} - Updated ${escapeHtml(lastLoadedText())}</span></div><div id="cards" class="cards">${records.length ? records.map(cardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section></main>
+      <main class="main"><section class="search-shell"><div class="search-panel"><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><select id="useFilter" class="select"><option value="">${escapeHtml(shortLocation())}</option>${useOptions()}</select><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>Showing ${escapeHtml(location.name)} - Updated ${escapeHtml(lastLoadedText())}</span></div><div id="cards" class="cards">${records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section></main>
       <footer class="footer">Internal quick-reference only. Always confirm handling, storage, disposal, and emergency procedures against the official current SDS and product label.</footer>`;
     bindEvents();
   }
@@ -253,6 +253,6 @@
   }
 
   function definitionList(items) { return `<dl>${items.map(([label, value]) => `<div class="kv"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "Not listed")}</dd></div>`).join("")}</dl>`; }
-  function lastLoadedText() { const date = state.sourceUpdatedAt || state.loadedAt; if (!date) return "CSV not loaded"; const label = state.sourceUpdatedAt ? "CSV updated" : "Loaded"; return `${label} ${date.toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`; }
+  function lastLoadedText() { const date = state.sourceUpdatedAt || state.loadedAt; if (!date) return "not loaded"; return date.toLocaleString([], { dateStyle: "short", timeStyle: "short" }); }
   function escapeHtml(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;"); }
 })();
