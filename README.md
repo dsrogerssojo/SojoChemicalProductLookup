@@ -76,6 +76,8 @@ Redlands - CA   -> contents/data/redlands-ca.csv
 
 Detailed setup steps are in `docs/power-automate-sharepoint-to-github.md`.
 
+A simplified fill-in-the-blanks template is in `docs/power-automate-flow-template.md`.
+
 ## Deploying
 
 For GitHub Pages:
