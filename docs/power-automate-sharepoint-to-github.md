@@ -1,8 +1,8 @@
-# Power Automate setup: SharePoint Excel to GitHub Pages CSV
+# Power Automate Setup: SharePoint Excel To GitHub CSV
 
-This workaround keeps SharePoint Excel as the source of truth while letting the public QR website load a simple CSV file from the same GitHub Pages site.
+This setup keeps each location's SharePoint Excel workbook as the source of truth while letting the public GitHub Pages website load simple CSV files from this repository.
 
-## Final data flow
+## Final Data Flow
 
 ```text
 Location leader edits Excel in SharePoint
@@ -11,21 +11,41 @@ Power Automate reads the Excel table
   ↓
 Power Automate converts rows to CSV
   ↓
-Power Automate updates data/sds.csv in this GitHub repo
+Power Automate updates that location's CSV in GitHub
   ↓
 GitHub Pages redeploys
   ↓
-QR website loads data/sds.csv on every page load
+The website loads the selected location's CSV
 ```
 
-## Step 1: Turn the SDS sheet into an Excel table
+## Location CSV Files
 
-Power Automate reads Excel most reliably when the rows are inside a named table.
+Use these GitHub file paths for the four flows:
 
-1. Open the SharePoint workbook in Excel.
+```text
+Langhorne - PA  -> data/langhorne-pa.csv
+Whiteland - IN  -> data/whiteland-in.csv
+Temple - TX     -> data/temple-tx.csv
+Redlands - CA   -> data/redlands-ca.csv
+```
+
+The GitHub API `contents` paths are:
+
+```text
+contents/data/langhorne-pa.csv
+contents/data/whiteland-in.csv
+contents/data/temple-tx.csv
+contents/data/redlands-ca.csv
+```
+
+## Step 1: Turn Each SDS Sheet Into An Excel Table
+
+Power Automate reads Excel most reliably when rows are inside a named table.
+
+1. Open the location's SharePoint workbook in Excel.
 2. Go to the `SDS Info` sheet.
-3. Click anywhere inside the SDS list.
-4. Press `Ctrl + T` or choose **Insert → Table**.
+3. Click inside the SDS list.
+4. Press `Ctrl + T` or choose **Insert -> Table**.
 5. Confirm that **My table has headers** is checked.
 6. With the table selected, go to **Table Design**.
 7. Rename the table to:
@@ -51,18 +71,18 @@ HFRP Info
 External Link To SDS
 ```
 
-## Step 2: Create a GitHub token
+## Step 2: Create A GitHub Token
 
-Power Automate needs permission to update `data/sds.csv`.
+Power Automate needs permission to update the CSV files.
 
-1. In GitHub, open **Settings → Developer settings → Personal access tokens**.
+1. In GitHub, open **Settings -> Developer settings -> Personal access tokens**.
 2. Create a fine-grained token for this repository only.
 3. Give it **Contents: Read and write** permission.
 4. Copy the token once and store it securely.
 
 Do not paste the token into the public repo.
 
-## Step 3: Create the Power Automate flow
+## Step 3: Create One Flow Per Location
 
 Recommended trigger for testing:
 
@@ -73,63 +93,52 @@ Manually trigger a flow
 Recommended trigger after testing:
 
 ```text
-Recurrence → every 5 minutes
+Recurrence -> every 5 minutes
 ```
 
 You can also use a SharePoint file-modified trigger, but recurrence is often simpler and more reliable for early testing.
 
-## Step 4: Add Excel action
+## Step 4: Add The Excel Action
 
 Add this action:
 
 ```text
-Excel Online (Business) → List rows present in a table
+Excel Online (Business) -> List rows present in a table
 ```
 
-Configure:
+Configure it for the location's SharePoint workbook:
 
 ```text
 Location: SharePoint Site
 Document Library: the library containing the workbook
-File: your SDS workbook
+File: that location's SDS workbook
 Table: SDSInfoTable
 ```
 
-## Step 5: Create CSV table
+## Step 5: Create CSV Table
 
 Add this action:
 
 ```text
-Data Operations → Create CSV table
+Data Operations -> Create CSV table
 ```
 
 Set **From** to the `value` output from **List rows present in a table**.
 
-Choose **Custom columns** and map these columns exactly:
+Choose **Custom columns** and map the required SDS columns exactly.
 
-```text
-Product Name
-Company Name
-Product Code
-Use
-SDS #
-Version #
-Issue Date
-Revision Date
-Supersedes Date
-HAZMAT Chemical Composition
-HFRP Info
-External Link To SDS
-```
+## Step 6: Get The Existing GitHub CSV
 
-## Step 6: Get the existing GitHub file
+Add an HTTP action.
 
-Add an HTTP action:
+For Langhorne:
 
 ```text
 Method: GET
-URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/sds.csv?ref=main
+URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/langhorne-pa.csv?ref=main
 ```
+
+For another location, replace `data/langhorne-pa.csv` with that location's CSV path.
 
 Headers:
 
@@ -139,14 +148,18 @@ Authorization: Bearer YOUR_GITHUB_TOKEN
 X-GitHub-Api-Version: 2022-11-28
 ```
 
-## Step 7: Update the GitHub CSV file
+## Step 7: Update The GitHub CSV
 
-Add another HTTP action:
+Add another HTTP action.
+
+For Langhorne:
 
 ```text
 Method: PUT
-URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/sds.csv
+URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/langhorne-pa.csv
 ```
+
+For another location, replace `data/langhorne-pa.csv` with that location's CSV path.
 
 Headers:
 
@@ -173,17 +186,18 @@ Important: the action name inside the expression must match your actual previous
 ## Step 8: Test
 
 1. Run the flow manually.
-2. Open this repo and check `data/sds.csv`.
-3. Confirm the file now contains the SharePoint Excel rows.
+2. Open this repo and check the location CSV.
+3. Confirm the file contains the SharePoint Excel rows.
 4. Wait for GitHub Pages to redeploy.
 5. Open the QR website.
-6. Add a test row in SharePoint Excel.
-7. Run the flow again.
-8. Refresh the QR website.
+6. Choose the matching location from the popup.
+7. Add a test row in SharePoint Excel.
+8. Run the flow again.
+9. Refresh the QR website and choose the location again.
 
 ## Notes
 
-- The QR website now reads `data/sds.csv`, not SharePoint directly.
-- The website adds a timestamp to the CSV request so browsers do not reuse old cached data.
-- GitHub Pages may take a short time to redeploy after the CSV file is committed.
-- After testing works, change the trigger from manual to recurrence.
+- The website reads CSV files from `data/`, not SharePoint directly.
+- The website adds a timestamp to CSV requests so browsers do not reuse old cached data.
+- GitHub Pages may take a short time to redeploy after a CSV file is committed.
+- After testing works, change each flow from manual to recurrence or a SharePoint trigger.
