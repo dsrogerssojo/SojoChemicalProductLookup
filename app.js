@@ -26,6 +26,7 @@
     sourceStatus: "Choose a location to load its SDS data feed.",
     sourceLabel: "CSV data feed",
     loadedAt: null,
+    sourceUpdatedAt: null,
     selectedLocation: null
   };
   document.addEventListener("DOMContentLoaded", init);
@@ -43,15 +44,18 @@
       const text = await response.text();
       const rows = parseCsv(text);
       const records = normalizeRows(rows);
+      const lastModified = response.headers.get("last-modified");
       state.records = records;
       state.sourceLabel = path;
       state.sourceStatus = `Loaded ${records.length} records from ${location.name}.`;
       state.loadedAt = new Date();
+      state.sourceUpdatedAt = lastModified ? new Date(lastModified) : null;
     } catch (error) {
       state.records = [];
       state.sourceLabel = path;
       state.sourceStatus = `The SDS data feed could not be loaded for ${location.name}. Check that Power Automate has created or updated ${path}.`;
       state.loadedAt = new Date();
+      state.sourceUpdatedAt = null;
       console.error(error);
     }
   }
@@ -88,6 +92,7 @@
     state.query = "";
     state.records = [];
     state.loadedAt = null;
+    state.sourceUpdatedAt = null;
     state.sourceStatus = `Loading latest SDS list for ${location.name}...`;
     if (updateUrl) {
       const nextUrl = new URL(window.location.href);
@@ -96,7 +101,7 @@
     }
     renderLoading();
     await loadLatestData();
-    renderLookupApp();
+    renderDashboardApp();
   }
 
   function clearLocation() {
@@ -104,6 +109,7 @@
     state.records = [];
     state.query = "";
     state.loadedAt = null;
+    state.sourceUpdatedAt = null;
     state.sourceStatus = "Choose a location to load its SDS data feed.";
     const nextUrl = new URL(window.location.href);
     nextUrl.searchParams.delete("location");
@@ -199,6 +205,23 @@
     bindEvents();
   }
 
+  function renderDashboardApp() {
+    const records = filteredRecords();
+    const location = currentLocation();
+    app.innerHTML = `
+      <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
+      <main class="main dashboard-main">
+        <section class="dashboard-head"><div><p class="eyebrow">SDS Safety Reference</p><h1>Search SDS Records</h1><p>Find SDS links, HFRP ratings, product details, and chemical records for the selected Sojo location.</p></div><img class="dashboard-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" /></section>
+        <section class="search-shell"><div class="search-panel"><div class="location-strip"><span class="location-chip">Viewing: ${escapeHtml(location.name)}</span><span>${escapeHtml(lastLoadedText())}</span></div><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><select id="useFilter" class="select"><option value="">All uses</option>${useOptions()}</select><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>${missingLinkCount()} record${missingLinkCount() === 1 ? "" : "s"} missing SDS links</span></div><div id="cards" class="cards">${records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section>
+      </main>
+      <footer class="footer">Internal quick-reference only. Always confirm handling, storage, disposal, and emergency procedures against the official current SDS and product label.</footer>`;
+    bindEvents();
+  }
+
+  function hasWebSds(record) { return /^https?:\/\//i.test(record.sdsLink || ""); }
+  function missingLinkCount() { return state.records.filter((record) => !hasWebSds(record)).length; }
+  function dashboardCardTemplate(record) { return `<button class="card" type="button" data-record-id="${escapeHtml(record.id)}"><h3>${escapeHtml(record.name)}</h3><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p><p><strong>Composition:</strong> ${escapeHtml(record.composition || "Not listed")}</p><p><strong>HFRP/NFPA:</strong> ${escapeHtml(record.hfrp || "Not listed")}</p><div class="badges"><span class="badge ${riskClass(record.risk)}">${escapeHtml(record.risk)}</span>${hasWebSds(record) ? `<span class="badge badge-linked">SDS linked</span>` : `<span class="badge badge-warning">SDS link missing</span>`}</div></button>`; }
+
   function shortLocation() { const location = currentLocation().name || "Current location"; return location.split(" - ")[0] || location; }
   function useOptions() { const uses = [...new Set(state.records.map((record) => record.use).filter(Boolean))].sort(); return uses.map((use) => `<option>${escapeHtml(use)}</option>`).join(""); }
   function cardTemplate(record) { return `<button class="card" type="button" data-record-id="${escapeHtml(record.id)}"><h3>${escapeHtml(record.name)}</h3><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" · "))}</p><p><strong>Composition:</strong> ${escapeHtml(record.composition || "Not listed")}</p><p><strong>HFRP/NFPA:</strong> ${escapeHtml(record.hfrp || "Not listed")}</p><div class="badges"><span class="badge ${riskClass(record.risk)}">${escapeHtml(record.risk)}</span>${record.sdsLink ? `<span class="badge">SDS linked</span>` : `<span class="badge">SDS missing</span>`}</div></button>`; }
@@ -220,16 +243,16 @@
     records.sort((a, b) => a.name.localeCompare(b.name));
     const meta = document.querySelector(".meta-row span"); const cards = document.getElementById("cards");
     if (meta) meta.textContent = `${records.length} result${records.length === 1 ? "" : "s"} shown`;
-    if (cards) cards.innerHTML = records.length ? records.map(cardTemplate).join("") : `<div class="empty">No matching records found.</div>`;
+    if (cards) cards.innerHTML = records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`;
   }
 
   function showDetail(record) {
     const panel = document.createElement("div"); panel.className = "detail-backdrop";
     panel.innerHTML = `<article class="detail" role="dialog" aria-modal="true"><header class="detail-header"><div><p class="eyebrow">SDS record</p><h2>${escapeHtml(record.name)}</h2><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" · "))}</p></div><button class="close" type="button" aria-label="Close">Close</button></header><div class="detail-body"><section class="info-block"><h3>Product Information</h3>${definitionList([["Company", record.company], ["Product code", record.productCode], ["Use", record.use], ["SDS #", record.sdsNumber], ["Version #", record.version], ["Issue date", record.issueDate], ["Revision date", record.revisionDate], ["Supersedes date", record.supersedesDate]])}</section><section class="info-block"><h3>Safety Reference</h3>${definitionList([["Composition", record.composition], ["HFRP / NFPA", record.hfrp], ["Risk level", record.risk], ["Location", record.location]])}${record.sdsLink && /^https?:\/\//i.test(record.sdsLink) ? `<a class="link-button" href="${escapeHtml(record.sdsLink)}" target="_blank" rel="noreferrer">Open SDS</a>` : `<p>No web SDS link is available in the data feed.</p>`}</section></div></article>`;
-    document.body.appendChild(panel); panel.querySelector(".close")?.focus(); panel.querySelector(".close")?.addEventListener("click", () => panel.remove()); panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); }); document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
+    document.body.appendChild(panel); const closeButton = panel.querySelector(".close"); const printButton = document.createElement("button"); printButton.className = "print-record"; printButton.type = "button"; printButton.textContent = "Print"; closeButton?.insertAdjacentElement("beforebegin", printButton); panel.querySelector(".detail-header")?.classList.add("detail-header-actions"); closeButton?.focus(); printButton.addEventListener("click", () => window.print()); closeButton?.addEventListener("click", () => panel.remove()); panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); }); document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
   }
 
   function definitionList(items) { return `<dl>${items.map(([label, value]) => `<div class="kv"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "Not listed")}</dd></div>`).join("")}</dl>`; }
-  function lastLoadedText() { if (!state.loadedAt) return "not loaded"; return state.loadedAt.toLocaleString([], { dateStyle: "short", timeStyle: "short" }); }
+  function lastLoadedText() { const date = state.sourceUpdatedAt || state.loadedAt; if (!date) return "CSV not loaded"; const label = state.sourceUpdatedAt ? "CSV updated" : "Loaded"; return `${label} ${date.toLocaleString([], { dateStyle: "short", timeStyle: "short" })}`; }
   function escapeHtml(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;"); }
 })();
