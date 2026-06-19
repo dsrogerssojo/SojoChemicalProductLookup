@@ -55,6 +55,14 @@ File: _________________________________
 Table: SDSInfoTable
 ```
 
+For the Whiteland - IN flow, use the internal SharePoint workbook link you were given to locate/select the Excel file in Power Automate.
+
+```text
+Whiteland SharePoint workbook link: do not commit this private URL to GitHub
+```
+
+The Excel connector may not accept the sharing URL directly in the **File** box. If that happens, open the workbook from the link, confirm its SharePoint site/library/folder, then use the Power Automate file picker to select the same workbook.
+
 Recommended Excel table name:
 
 ```text
@@ -207,3 +215,36 @@ Table: SDSInfoTable
 ```
 
 Everything else can stay the same except the location-specific GitHub CSV path.
+
+## Whiteland - IN Quick Copy Checklist
+
+When copying the Langhorne flow for Indiana, rename it:
+
+```text
+SDS CSV Sync - Whiteland IN
+```
+
+Update **List rows present in a table**:
+
+```text
+Location: the SharePoint site that contains the Whiteland workbook
+Document Library: the library that contains the Whiteland workbook
+File: the Whiteland workbook from the link above
+Table: SDSInfoTable
+```
+
+Update **Get existing GitHub file**:
+
+```text
+Method: GET
+URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/whiteland-in.csv?ref=main
+```
+
+Update **Update GitHub CSV**:
+
+```text
+Method: PUT
+URI: https://api.github.com/repos/dsrogerssojo/SojoChemicalProductLookup/contents/data/whiteland-in.csv
+```
+
+Keep the same headers and body from the Langhorne flow unless your copied action names changed.
