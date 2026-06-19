@@ -1,54 +1,48 @@
-@odata.etag,ItemInternalId,Product Name,Manufacturer,Intended Use,Storage Location,SDS Reference Number,SDS Link
-,5f9d7ffe-4988-4139-89ed-b5eac3bff91c,Glass Cleaner,Uline Inc.,Cleaner,Supply Closet,S-19451,SDS Link
-,60011eb2-7fc1-46aa-b867-c5fbc425fc12,Uline Toilet Bowl Cleaner,Uline Inc.,Cleaner,Supply Closet,S-24321,SDS Link
-,c311e831-a125-4f6a-9560-68381b91e7c6,"Uline Antibacterial, Light Moisturizing Hand Soap",Uline Inc.,Cleaner,Supply Closet,Uline SDS – SS-17080 (no SDS # listed),SDS Link
-,e8dbb7f6-7dc2-474f-8477-6e5ce143aa2b,Uline Multi-Purpose Cleaner - Lavender,Uline Inc.,Cleaner,Supply Closet,S-19454,SDS Link
-,015a43f0-658d-4f74-a20d-d1125663e965,All Purpose Cleaner,Uline Inc.,Cleaner,Supply Closet,S-19455,SDS Link
-,9bb7f293-36ed-4a6a-9120-c89bf20f8612,FANTASTIK DISINFECTANT MULTI-PURPOSE CLEANER,S.C. Kohnson & Son Inc.,Cleaner,Janitorial Closet,350000032935,SDS Link
-,e91e1b58-d451-45ff-90bc-c7d78572c506,Clorox Regular-Bleach,The Clorox Company,Cleaner,Janitorial Closet,5813‑100,SDS Link
-,7076555f-389c-43b5-8008-9b5b4ba22c14,Dawn Ultra Dishwashing Liquid,Procter & Gamble Inc.,Cleaner,Maintenance Crib,97591965_RET_NG,SDS Link
-,d45ac45a-d966-4a3e-8efe-71e8c1a3a534,Uline Liquid Dish Soap,Uline Inc.,Cleaner,Supply Closet,S-25782,SDS Link
-,7b700b7e-c752-4f64-b559-fe1c77dd3af0,Professional Lysol Disinfectant Spray,Reckitt Benckiser Inc.,Cleaner,Supply Closet,D0224478,SDS Link
-,f712eb23-0163-481c-98bc-51e95c9a5c25,Simple Green Industrial Cleaner & Degreaser,Sunshine Makers Inc.,Cleaner,Supply Closet,043318004797 (S-7290),SDS Link
-,8b7848c7-ae12-4a6e-949b-e4255bb6f0cb,LU 700 Food Grade Machinery Oil,Sprayon Products Group,Lubricant,Maintenance Flame Cab,S70005000,SDS Link
-,68bbc00c-e368-423d-88ea-8ea7a2c55dba,ZINSSER TUB 4X1.13KG HYDRAULIC CEMENT,Rust-Oleum Corporation,Adhesive,Maintenance Crib,266296,SDS Link
-,406526dc-81be-4d77-bab7-1ca77ea13d7e,WD-40 3-IN-ONE Multi-Purpose Oil,WD-40 Company,Lubricant,Maintenance Crib,64742-52-5,SDS Link
-,0506c344-1509-477f-b697-545fa945e825,Methyl Ethyl Ketone,Markem-imaje USA,Cleaning Agent,Operations Flame Cab,5100-4,SDS Link
-,4ca84283-049d-46c7-b58f-aaaa1ea9168b,Methyl Ethyl Ketone,Markem-imaje USA,Cleaning Agent,Operations Flame Cab,A188-4,SDS Link
-,d3a04654-40b2-4c8b-b31d-9f0cb14979ad,A26060,Markem-imaje USA,Printer Ink,Operations Flame Cab,Mb175-4,SDS Link
-,59eb13e7-4143-45e7-a79d-a875f6995c29,TECHNOMELT COOL 500,Henkel Corporation,Adhesive,Maintenance Crib,1676309,SDS Link
-,70944c34-bd16-4008-9379-c798ab3ee151,JET-LUBE AP-5,Jet-Lube LLC,Lubricant,Maintenance Crib,WPS-JLI-021,
-,628f22ac-5ec3-4199-950a-06fd3680fa80,LU 700 Food Grade Machinery Oil Aerosol,Sprayon Products,Lubricant,Maintenance Flame Cab,S00700,SDS Link
-,b13277da-4f38-4d17-bbb9-0165ad508395,LU 210 Food Grade Silicone Lubricant Aerosol,Spray Products,Lubricant,Maintenance Crib,S00210,SDS Link
-,70d9f48b-e9c1-4bd7-91f6-73003fe7833b,Spic and Span Disinfecting All-Purpose Spray and Glass Cleaner,Procter & Gamble Professional,Cleaner,Supply Closet,92041835_DIL_PROF_NG,SDS Link
-,300868b0-3da8-4408-a183-7d9765ee7aff,Rust-oleum Strust + SSPR 6Pk,Rust-Oleum Corporation,Paint,Maintenance Flame Cab 2,7798830,SDS Link
-,45526c9d-622a-46aa-bbf1-43b69dc6efb2,American Rock Salt,American Rock Salt Company LLC,De-icing,Supply Closet,767-14-5,SDS Link
-,7b0c843c-9a3c-4f29-bb05-a7ae2f0f3d4f,Morton Table Salt,"Morton Salt, Inc.",Salt,Break Room,100,SDS Link
-,2c147633-cb6b-4034-80e5-ca1efafbe90b,Mold Armor & Mildew Killer + Quick Stain Remover,W.M. Barr,Cleaner,Supply Closet,FG502,SDS Link
-,73e1a181-761c-422e-9036-de2975ad4ed3,Fabuloso All Purpose Cleaner Liquid Lavender,Colgate-Palmolive Co,Cleaner,Supply Closet,660000000778,SDS Link
-,ba6829ca-faf8-4086-9c43-55dbce5ff76d,Moisturizing Hand Sanitizer,Uline Shipping Supplies,Sanitizer,Maintenance Crib,849AA,SDS Link
-,72ea2201-234f-46f3-9579-a93be181a840,SP 610 Anti-Static Spray Aerosal,"Sprayon Products Group
+Product Name,Manufacturer,Intended Use,Storage Location,SDS Reference Number,External Link To SDS
+Glass Cleaner,Uline Inc.,Cleaner,Supply Closet,S-19451,https://img.uline.com/is/content/uline/SS-19452pdf
+Uline Toilet Bowl Cleaner,Uline Inc.,Cleaner,Supply Closet,S-24321,https://img.uline.com/is/content/uline/SS-24321pdf
+"Uline Antibacterial, Light Moisturizing Hand Soap",Uline Inc.,Cleaner,Supply Closet,Uline SDS – SS-17080 (no SDS # listed),https://img.uline.com/is/content/uline/SS-17080pdf
+Uline Multi-Purpose Cleaner - Lavender,Uline Inc.,Cleaner,Supply Closet,S-19454,https://img.uline.com/is/content/uline/SS-19454pdf
+All Purpose Cleaner,Uline Inc.,Cleaner,Supply Closet,S-19455,https://www.uline.com/PDF/SS-19455.pdf
+FANTASTIK DISINFECTANT MULTI-PURPOSE CLEANER,S.C. Kohnson & Son Inc.,Cleaner,Janitorial Closet,350000032935,https://www.scjp.com/en-us/products/fantastik-disinfectant-multi-purpose-cleaner-lemon-scent
+Clorox Regular-Bleach,The Clorox Company,Cleaner,Janitorial Closet,5813‑100,https://www.thecloroxcompany.com/wp-content/uploads/2020/12/US001066-Clorox-Regular-Bleach1_3.pdf
+Dawn Ultra Dishwashing Liquid,Procter & Gamble Inc.,Cleaner,Maintenance Crib,97591965_RET_NG,https://sds.chemtel.net/webclients/cheneybrothers/540011SDS.pdf
+Uline Liquid Dish Soap,Uline Inc.,Cleaner,Supply Closet,S-25782,https://img.uline.com/is/content/uline/SS-25782pdf
+Professional Lysol Disinfectant Spray,Reckitt Benckiser Inc.,Cleaner,Supply Closet,D0224478,https://content.oppictures.com/master_images/master_pdf_files/rac04675ea_sds.pdf
+Simple Green Industrial Cleaner & Degreaser,Sunshine Makers Inc.,Cleaner,Supply Closet,043318004797 (S-7290),https://cdn.simplegreen.com/downloads/SDS_EN-US_SimpleGreenIndustrialCleanerDegreaser.pdf
+LU 700 Food Grade Machinery Oil,Sprayon Products Group,Lubricant,Maintenance Flame Cab,S70005000,https://www.grainger.com/sds/pdf/220785.pdf
+ZINSSER TUB 4X1.13KG HYDRAULIC CEMENT,Rust-Oleum Corporation,Adhesive,Maintenance Crib,266296,https://www.rustoleum.com/MSDS/ENGLISH/266296.PDF?utm_source=chatgpt.com
+WD-40 3-IN-ONE Multi-Purpose Oil,WD-40 Company,Lubricant,Maintenance Crib,64742-52-5,https://files.wd40.com/pdf/sds/3inone/3-in-one-multi-purpose-oil-w-telescoping-spout.pdf
+Methyl Ethyl Ketone,Markem-imaje USA,Cleaning Agent,Operations Flame Cab,5100-4,https://www.markem-imaje.com/services-support/safety-data-sheets
+Methyl Ethyl Ketone,Markem-imaje USA,Cleaning Agent,Operations Flame Cab,A188-4,https://www.markem-imaje.com/services-support/safety-data-sheets
+A26060,Markem-imaje USA,Printer Ink,Operations Flame Cab,Mb175-4,https://www.markem-imaje.com/services-support/safety-data-sheets
+TECHNOMELT COOL 500,Henkel Corporation,Adhesive,Maintenance Crib,1676309,https://static.rshughes.com/wm/p/wm-asis/97709d822b9d485f821f04702e5e84aa4607769a.pdf?uf=&utm_source=chatgpt.com
+JET-LUBE AP-5,Jet-Lube LLC,Lubricant,Maintenance Crib,WPS-JLI-021,
+LU 700 Food Grade Machinery Oil Aerosol,Sprayon Products,Lubricant,Maintenance Flame Cab,S00700,https://www.grainger.com/sds/pdf/220785.pdf
+LU 210 Food Grade Silicone Lubricant Aerosol,Spray Products,Lubricant,Maintenance Crib,S00210,https://assetcloud.roccommerce.net/files/_kljack/6/5/3/sprayon-lu210-food-grade-silicone-lubricant-sds.pdf?utm_source=chatgpt.com
+Spic and Span Disinfecting All-Purpose Spray and Glass Cleaner,Procter & Gamble Professional,Cleaner,Supply Closet,92041835_DIL_PROF_NG,https://www.webstaurantstore.com/documents/sds/63232535cl_92041835_dil_prof_ng_mtr_pgcn_en.pdf?utm_source=chatgpt.com
+Rust-oleum Strust + SSPR 6Pk,Rust-Oleum Corporation,Paint,Maintenance Flame Cab 2,7798830,https://www.rustoleum.com/MSDS/ENGLISH/7798830.PDF?utm_source=chatgpt.com
+American Rock Salt,American Rock Salt Company LLC,De-icing,Supply Closet,767-14-5,https://americanrocksalt.com/wp-content/uploads/2024/10/American_Rock_Salt_Company-Rock_Salt_Halite_Salt_Firerock-ProMelt-Ultra-2000-INH-Blue_GHS_SDS_10_23_2024.pdf?utm_source=chatgpt.com
+Morton Table Salt,"Morton Salt, Inc.",Salt,Break Room,100,https://labelsds.com/images/user_uploads/Morton%20Salt%20SDS%205-27-21.pdf
+Mold Armor & Mildew Killer + Quick Stain Remover,W.M. Barr,Cleaner,Supply Closet,FG502,https://www.barringredients.com/Content/PDFs/FG502-SDS.pdf?utm_source=chatgpt.com
+Fabuloso All Purpose Cleaner Liquid Lavender,Colgate-Palmolive Co,Cleaner,Supply Closet,660000000778,https://img.uline.com/is/content/uline/SS-19454pdf
+Moisturizing Hand Sanitizer,Uline Shipping Supplies,Sanitizer,Maintenance Crib,849AA,
+SP 610 Anti-Static Spray Aerosal,"Sprayon Products Group
 (Under Sherwin-Williams)",neutralize static electricity,Maintenance Flame Cab 2,"GHS-85-NA-GHS-US(2020 SDS)
-SC0610000(MSDS)",SDS Link
-,2de3c953-3d9c-443d-838a-d92d72ae7cb7,Purple Power Cleaner/Degreaser,Aiken Chemical Company Inc.,Cleaner,Supply Closet,4320P,SDS Link
-,b1a22ad6-bde5-4015-8b7d-c8ab6e88100f,PB Penetrating Catalyst (Bulk),The Blaster Corporation,Penetrant,Maintenance Flame Cab 2,"128-PB, 5-PB, 55-PB",SDS Link
-,51a2eefd-c0cc-44d9-b450-aa50764fcecb,Chain and Cable Lube,Blaster LLC,Lubricant,Maintenance Crib,16-CCL,SDS Link
-,89bca331-44f8-4e32-9739-a4110742c619,Signet Glass & Multi-Surface Cleaner,"Diversey, Inc.",Industrial/Institutional cleaning product; dilute prior to use,"Janitorial Closet
-Auto Dilution System",MS0800239,SDS Link
-,1104b67a-b135-4ee3-bac1-a7b2f90f05d6,Signet Heavy Duty Non-Acid Washroom Cleaner/Disinfectant,"Diversey, Inc. ",Industrial/Institutional disinfectant cleaner; dilute prior to use,"Janitorial Closet
-Auto Dilution System",MS0800426,SDS Link
-,79851a0d-b962-4707-87ce-5969201157f5,Signet® Neutral Disinfectant,"Diversey, Inc. ",Industrial/Institutional disinfectant cleaner; dilute prior to use,"Janitorial Closet
-Auto Dilution System",MS0800413,SDS Link
-,cbda67b1-1519-4873-a94a-8fcca7bebee1,Signet Neutral Floor Cleaner,"Diversey, Inc.",Industrial/Institutional Cleaning product: Dilute prior to use,"Janitorial Closet
-Auto Dilution System",MS0800222,SDS Link
-,2005f326-b1f9-4c60-a04d-4ba854633f53,Industrial Gear Lube 680,SUPER Brand,Lubrication for enclosed industrial gear sets (stated on label),Maintenance Flame Cab 2,6910,SDS Link
-,e0cedb07-9cb1-415f-9e8e-60e5c04ade5f,Isopropyl Alcohol 91% (Equate First Aid Antiseptic Spray),Hydrox Laboratories,"First aid antiseptic; topical disinfectant for cuts, scrapes, and minor burns",Flame Cab,"SDS-004 (Formula No. 004, Rev. 06/16/2023)",SDS Link
-,c9a0d539-ca51-4914-b48b-7699f05396b1,Uline Air Freshener,Uline Inc.,Air Freshener,Supply Closet,S-17147,SDS Link
-,edb8112a-8a78-433a-a807-9b05b4670414,Sani Professional No Rinse Sanitizing Wipes,Uline Inc.,Cleaner,Supply Closet,S-23602,SDS Link
-,6816969b-7139-41d6-a69a-e512f262cbae,Tap Magic Aluminum Cutting Fluid,The Steco Corporation (Tap Magic),Cutting Fluid for Non-Ferrous Metal,Maintenance Flame Cab 2,20004A,SDS Link
-,455279c0-2055-4211-b01a-2f374b93ec38,,,,,,
-,99f55d0a-c225-4a38-83d3-ae64824b0cd4,,,,,,
-,c311fd15-abf5-4589-ad32-31977a9c8b0f,,,,,,
-,169d5a1b-d4b5-49f4-8961-786f4628ad54,,,,,,
-,9e5ebf57-d58b-45ec-b30f-b057ac42c5ad,,,,,,
-,68c5c18e-67aa-44d8-9a99-fbff9b467446,,,,,,
+SC0610000(MSDS)",
+Purple Power Cleaner/Degreaser,Aiken Chemical Company Inc.,Cleaner,Supply Closet,4320P,
+PB Penetrating Catalyst (Bulk),The Blaster Corporation,Penetrant,Maintenance Flame Cab 2,"128-PB, 5-PB, 55-PB",
+Chain and Cable Lube,Blaster LLC,Lubricant,Maintenance Crib,16-CCL,
+Signet Glass & Multi-Surface Cleaner,"Diversey, Inc.",Industrial/Institutional cleaning product; dilute prior to use,"Janitorial Closet
+Auto Dilution System",MS0800239,
+Signet Heavy Duty Non-Acid Washroom Cleaner/Disinfectant,"Diversey, Inc. ",Industrial/Institutional disinfectant cleaner; dilute prior to use,"Janitorial Closet
+Auto Dilution System",MS0800426,
+Signet® Neutral Disinfectant,"Diversey, Inc. ",Industrial/Institutional disinfectant cleaner; dilute prior to use,"Janitorial Closet
+Auto Dilution System",MS0800413,
+Signet Neutral Floor Cleaner,"Diversey, Inc.",Industrial/Institutional Cleaning product: Dilute prior to use,"Janitorial Closet
+Auto Dilution System",MS0800222,
+Industrial Gear Lube 680,SUPER Brand,Lubrication for enclosed industrial gear sets (stated on label),Maintenance Flame Cab 2,6910,https://tritechlubricants.com/wp-content/uploads/2016/10/7026-INDUSTRIAL_GEAR_OIL_680-SDS.pdf?utm_source=chatgpt.com
+Isopropyl Alcohol 91% (Equate First Aid Antiseptic Spray),Hydrox Laboratories,"First aid antiseptic; topical disinfectant for cuts, scrapes, and minor burns",Flame Cab,"SDS-004 (Formula No. 004, Rev. 06/16/2023)",
+Uline Air Freshener,Uline Inc.,Air Freshener,Supply Closet,S-17147,https://img.uline.com/is/content/uline/SS-17147pdf
+Sani Professional No Rinse Sanitizing Wipes,Uline Inc.,Cleaner,Supply Closet,S-23602,
+Tap Magic Aluminum Cutting Fluid,The Steco Corporation (Tap Magic),Cutting Fluid for Non-Ferrous Metal,Maintenance Flame Cab 2,20004A,https://tapmagic.com/wp-content/uploads/2025/01/20241106135018-tap-magic-aluminum-sds-us-en-final-2024pdf.pdf
