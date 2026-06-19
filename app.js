@@ -9,8 +9,8 @@
     name: ["product name", "chemical name", "product", "name"],
     company: ["company name", "company", "manufacturer", "supplier"],
     productCode: ["product code", "code", "item #", "item number"],
-    use: ["use", "category", "classification"],
-    sdsNumber: ["sds #", "sds number", "sds no", "sds"],
+    use: ["use", "intended use", "category", "classification"],
+    sdsNumber: ["sds #", "sds number", "sds no", "sds", "sds reference number"],
     version: ["version #", "version", "sds version"],
     issueDate: ["issue date", "date issued"],
     revisionDate: ["revision date", "revised date", "date revised"],
@@ -42,7 +42,7 @@
       const response = await fetch(withCacheBuster(path), { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
-      const rows = parseCsv(text);
+      const rows = parseCsv(extractCsvText(text));
       const records = normalizeRows(rows);
       const lastModified = response.headers.get("last-modified");
       state.records = records;
@@ -133,6 +133,17 @@
     }
     row.push(field); if (row.some((value) => String(value).trim())) rows.push(row);
     return rows;
+  }
+
+  function extractCsvText(text) {
+    const trimmed = String(text || "").trim();
+    if (!trimmed.startsWith("{")) return text;
+    try {
+      const wrapped = JSON.parse(trimmed);
+      return typeof wrapped.body === "string" ? wrapped.body : text;
+    } catch (error) {
+      return text;
+    }
   }
 
   function normalizeRows(rows) {
