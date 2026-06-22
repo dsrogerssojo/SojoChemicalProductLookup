@@ -220,7 +220,7 @@
     const records = filteredRecords();
     const location = currentLocation();
     app.innerHTML = `
-      <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
+      <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="requestChemical" class="button button-secondary" type="button">Request New Chemical</button><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
       <section class="hero"><div class="hero-inner"><div class="hero-copy"><p class="eyebrow">SDS Safety Reference</p><h1>Search SDS Records.</h1><p>Fast lookup for SDS links, product details, spreadsheet fields, and current chemical records for ${escapeHtml(location.name)}.</p><div class="hero-badges"><span class="hero-badge">${state.records.length} records</span></div></div><div class="hero-logo-card"><img class="hero-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /></div></div></section>
       <main class="main"><section class="search-shell"><div class="search-panel"><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>Showing ${escapeHtml(location.name)} - Updated ${escapeHtml(lastLoadedText())}</span></div><div id="cards" class="cards">${records.length ? records.map(recordCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section></main>
       <footer class="footer">Internal quick-reference only. Always confirm handling, storage, disposal, and emergency procedures against the official current SDS and product label.</footer>`;
@@ -232,6 +232,7 @@
 
   function bindEvents() {
     document.getElementById("changeLocation")?.addEventListener("click", clearLocation);
+    document.getElementById("requestChemical")?.addEventListener("click", showChemicalRequestForm);
     document.getElementById("searchInput")?.addEventListener("input", (event) => { state.query = event.target.value; applyFilters(); });
     document.getElementById("searchButton")?.addEventListener("click", applyFilters);
     document.getElementById("cards")?.addEventListener("click", (event) => { const card = event.target.closest("[data-record-id]"); if (!card) return; const record = state.records.find((item) => item.id === card.dataset.recordId); if (record) showDetail(record); });
@@ -251,6 +252,39 @@
     const panel = document.createElement("div"); panel.className = "detail-backdrop";
     panel.innerHTML = `<article class="detail" role="dialog" aria-modal="true"><header class="detail-header"><div><p class="eyebrow">SDS record</p><h2>${escapeHtml(record.name)}</h2><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p></div><div class="detail-actions"><button class="print-record" type="button">Print</button><button class="close" type="button" aria-label="Close">Close</button></div></header><div class="detail-body"><section class="info-block"><h3>Spreadsheet Fields</h3>${definitionList(record.displayFields)}</section><section class="info-block"><h3>SDS Link</h3>${record.sdsLink && /^https?:\/\//i.test(record.sdsLink) ? `<a class="link-button" href="${escapeHtml(record.sdsLink)}" target="_blank" rel="noreferrer">Open SDS</a>` : `<p>No web SDS link is available in the data feed.</p>`}</section></div></article>`;
     document.body.appendChild(panel); const closeButton = panel.querySelector(".close"); const printButton = panel.querySelector(".print-record"); closeButton?.focus(); printButton?.addEventListener("click", () => window.print()); closeButton?.addEventListener("click", () => panel.remove()); panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); }); document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
+  }
+
+  function showChemicalRequestForm() {
+    const panel = document.createElement("div"); panel.className = "detail-backdrop";
+    const locationOptions = locations().map((location) => `<option value="${escapeHtml(location.name)}"${location.slug === currentLocation().slug ? " selected" : ""}>${escapeHtml(location.name)}</option>`).join("");
+    panel.innerHTML = `
+      <article class="detail request-modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
+        <header class="detail-header">
+          <div><p class="eyebrow">New chemical request</p><h2 id="requestTitle">Request SDS Addition</h2><p>Submit a product for review by the location SDS owner.</p></div>
+          <div class="detail-actions"><button class="close" type="button" aria-label="Close">Close</button></div>
+        </header>
+        <form class="request-form">
+          <label><span>Location</span><select name="location" required>${locationOptions}</select></label>
+          <label><span>Product</span><input name="product" type="text" required placeholder="Product or chemical name" /></label>
+          <label><span>Reason</span><textarea name="reason" required placeholder="Why is this product needed?"></textarea></label>
+          <label><span>Requester</span><input name="requester" type="text" required placeholder="Your name" /></label>
+          <label><span>Notes</span><textarea name="notes" placeholder="Optional details"></textarea></label>
+          <p class="request-status" role="status"></p>
+          <div class="request-actions"><button class="button button-primary" type="submit">Submit Request</button></div>
+        </form>
+      </article>`;
+    document.body.appendChild(panel);
+    const form = panel.querySelector(".request-form");
+    const closeButton = panel.querySelector(".close");
+    const status = panel.querySelector(".request-status");
+    form?.querySelector("input")?.focus();
+    form?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      status.textContent = "Request form is ready. Power Automate connection has not been added yet.";
+    });
+    closeButton?.addEventListener("click", () => panel.remove());
+    panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); });
+    document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
   }
 
   function definitionList(items) { const rows = items.filter(([, value]) => clean(value)); return rows.length ? `<dl>${rows.map(([label, value]) => `<div class="kv"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("")}</dl>` : `<p>No additional spreadsheet fields are listed for this record.</p>`; }
