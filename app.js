@@ -36,13 +36,19 @@
   document.addEventListener("DOMContentLoaded", init);
 
   async function init() {
-    renderLocationSelect();
+    const locationFromUrl = getLocationFromUrl();
+    if (locationFromUrl) {
+      await selectLocation(locationFromUrl, false);
+    } else {
+      renderLocationSelect();
+    }
   }
 
   async function loadLatestData() {
     const location = currentLocation();
-    const path = location.csvSourcePath || config.CSV_SOURCE_PATH || "data/sds.csv";
+    const path = location.csvSourcePath;
     try {
+      if (!path) throw new Error(`Missing CSV path for ${location.name}`);
       const response = await fetch(withCacheBuster(path), { cache: "no-store" });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const text = await response.text();
@@ -60,7 +66,6 @@
       state.sourceStatus = `The SDS data feed could not be loaded for ${location.name}. Check that Power Automate has created or updated ${path}.`;
       state.loadedAt = new Date();
       state.sourceUpdatedAt = null;
-      console.error(error);
     }
   }
 
@@ -68,20 +73,11 @@
 
   function locations() {
     const configured = Array.isArray(config.LOCATIONS) ? config.LOCATIONS : [];
-    if (configured.length) return configured.filter((location) => location && location.slug && location.name);
-    return [{
-      name: config.LOCATION_NAME || "Current Location",
-      slug: config.LOCATION_SLUG || "current-location",
-      csvSourcePath: config.CSV_SOURCE_PATH || "data/sds.csv"
-    }];
+    return configured.filter((location) => location && location.slug && location.name && location.csvSourcePath);
   }
 
   function currentLocation() {
-    return state.selectedLocation || locations()[0] || {
-      name: "Current Location",
-      slug: "current-location",
-      csvSourcePath: "data/sds.csv"
-    };
+    return state.selectedLocation || locations()[0] || { name: "No Location", slug: "none", csvSourcePath: "" };
   }
 
   function getLocationFromUrl() {
@@ -226,29 +222,13 @@
     app.innerHTML = `
       <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
       <section class="hero"><div class="hero-inner"><div class="hero-copy"><p class="eyebrow">SDS Safety Reference</p><h1>Search SDS Records.</h1><p>Fast lookup for SDS links, product details, spreadsheet fields, and current chemical records for ${escapeHtml(location.name)}.</p><div class="hero-badges"><span class="hero-badge">${state.records.length} records</span><span class="hero-badge">Spreadsheet fields</span><span class="hero-badge">SDS links</span><span class="hero-badge">Separate data feed</span></div></div><div class="hero-logo-card"><img class="hero-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /></div></div></section>
-      <main class="main"><section class="search-shell"><div class="search-panel"><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>Showing ${escapeHtml(location.name)} - Updated ${escapeHtml(lastLoadedText())}</span></div><div id="cards" class="cards">${records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section></main>
-      <footer class="footer">Internal quick-reference only. Always confirm handling, storage, disposal, and emergency procedures against the official current SDS and product label.</footer>`;
-    bindEvents();
-  }
-
-  function renderDashboardApp() {
-    const records = filteredRecords();
-    const location = currentLocation();
-    app.innerHTML = `
-      <header class="topbar"><div class="topbar-inner"><div class="brand"><img class="brand-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /><div><p class="brand-title">${escapeHtml(config.APP_TITLE || "SDS Lookup")}</p><p class="brand-subtitle">${escapeHtml(location.name)}</p></div></div><div class="topbar-actions"><span class="status-pill">${escapeHtml(state.sourceStatus)}</span><button id="changeLocation" class="button button-secondary" type="button">Switch Location</button></div></div></header>
-      <main class="main dashboard-main">
-        <section class="dashboard-head"><div><p class="eyebrow">SDS Safety Reference</p><h1>Search SDS Records</h1><p>Find SDS links, HFRP ratings, product details, and chemical records for the selected Sojo location.</p></div><img class="dashboard-logo" src="${SOJO_LOGO_SRC}" alt="Sojo logo" draggable="false" /></section>
-        <section class="search-shell"><div class="search-panel"><div class="location-strip"><span class="location-chip">Viewing: ${escapeHtml(location.name)}</span><span>${escapeHtml(lastLoadedText())}</span></div><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>${missingLinkCount()} record${missingLinkCount() === 1 ? "" : "s"} missing SDS links</span></div><div id="cards" class="cards">${records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section>
-      </main>
+      <main class="main"><section class="search-shell"><div class="search-panel"><div class="controls"><input id="searchInput" class="search-input" value="${escapeHtml(state.query)}" placeholder="Search cleaner, bleach, company, product code, composition..." autofocus /><button id="searchButton" class="button button-primary" type="button">Search</button></div></div><div class="library-head"><p class="section-kicker">Safety Library</p><h2>Chemical Records</h2></div><div class="meta-row"><span>${records.length} result${records.length === 1 ? "" : "s"} shown</span><span>Showing ${escapeHtml(location.name)} - Updated ${escapeHtml(lastLoadedText())}</span></div><div id="cards" class="cards">${records.length ? records.map(recordCardTemplate).join("") : `<div class="empty">No matching records found.</div>`}</div></section></main>
       <footer class="footer">Internal quick-reference only. Always confirm handling, storage, disposal, and emergency procedures against the official current SDS and product label.</footer>`;
     bindEvents();
   }
 
   function hasWebSds(record) { return /^https?:\/\//i.test(record.sdsLink || ""); }
-  function missingLinkCount() { return state.records.filter((record) => !hasWebSds(record)).length; }
-  function dashboardCardTemplate(record) { return `<button class="card" type="button" data-record-id="${escapeHtml(record.id)}"><h3>${escapeHtml(record.name)}</h3><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p><p><strong>Storage:</strong> ${escapeHtml(record.storageLocation || "Not listed")}</p><p><strong>Review:</strong> ${escapeHtml(record.lastReviewDate || record.revisionDate || "Not listed")}</p><div class="badges">${hasWebSds(record) ? `<span class="badge badge-linked">SDS linked</span>` : `<span class="badge badge-warning">SDS link missing</span>`}</div></button>`; }
-
-  function cardTemplate(record) { return `<button class="card" type="button" data-record-id="${escapeHtml(record.id)}"><h3>${escapeHtml(record.name)}</h3><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p><p><strong>Composition:</strong> ${escapeHtml(record.composition || "Not listed")}</p><p><strong>HFRP/NFPA:</strong> ${escapeHtml(record.hfrp || "Not listed")}</p><div class="badges">${record.sdsLink ? `<span class="badge">SDS linked</span>` : `<span class="badge">SDS missing</span>`}</div></button>`; }
+  function recordCardTemplate(record) { return `<button class="card" type="button" data-record-id="${escapeHtml(record.id)}"><h3>${escapeHtml(record.name)}</h3><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p><p><strong>Storage:</strong> ${escapeHtml(record.storageLocation || "Not listed")}</p><p><strong>Review:</strong> ${escapeHtml(record.lastReviewDate || record.revisionDate || "Not listed")}</p><div class="badges">${hasWebSds(record) ? `<span class="badge badge-linked">SDS linked</span>` : `<span class="badge badge-warning">SDS link missing</span>`}</div></button>`; }
 
   function bindEvents() {
     document.getElementById("changeLocation")?.addEventListener("click", clearLocation);
@@ -264,7 +244,7 @@
     records.sort((a, b) => a.name.localeCompare(b.name));
     const meta = document.querySelector(".meta-row span"); const cards = document.getElementById("cards");
     if (meta) meta.textContent = `${records.length} result${records.length === 1 ? "" : "s"} shown`;
-    if (cards) cards.innerHTML = records.length ? records.map(dashboardCardTemplate).join("") : `<div class="empty">No matching records found.</div>`;
+    if (cards) cards.innerHTML = records.length ? records.map(recordCardTemplate).join("") : `<div class="empty">No matching records found.</div>`;
   }
 
   function showDetail(record) {

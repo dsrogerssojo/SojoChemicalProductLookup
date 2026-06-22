@@ -1,7 +1,6 @@
 window.SOJO_LOOKUP_CONFIG = {
   APP_TITLE: "Sojo SDS Lookup",
   COMPANY_NAME: "Sojo Industries",
-  DEFAULT_LOCATION_SLUG: "langhorne-pa",
   LOCATIONS: [
     {
       name: "Langhorne - PA",
@@ -23,7 +22,5 @@ window.SOJO_LOOKUP_CONFIG = {
       slug: "redlands-ca",
       csvSourcePath: "data/redlands-ca.csv"
     }
-  ],
-  EMERGENCY_PHONE: "911",
-  POISON_CONTROL_PHONE: "1-800-222-1222"
+  ]
 };
