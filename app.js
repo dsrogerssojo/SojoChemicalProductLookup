@@ -194,6 +194,7 @@
           <div class="location-grid">
             ${locations().map(locationCardTemplate).join("")}
           </div>
+          <button id="requestChemicalStart" class="button button-primary location-request-button" type="button">Request New Chemical</button>
         </section>
       </main>`;
     bindLocationEvents();
@@ -204,6 +205,7 @@
   }
 
   function bindLocationEvents() {
+    document.getElementById("requestChemicalStart")?.addEventListener("click", showChemicalRequestForm);
     document.querySelectorAll("[data-location-slug]").forEach((button) => {
       button.addEventListener("click", () => {
         const location = locations().find((item) => item.slug === button.dataset.locationSlug);
@@ -256,7 +258,9 @@
 
   function showChemicalRequestForm() {
     const panel = document.createElement("div"); panel.className = "detail-backdrop";
-    const locationOptions = locations().map((location) => `<option value="${escapeHtml(location.name)}"${location.slug === currentLocation().slug ? " selected" : ""}>${escapeHtml(location.name)}</option>`).join("");
+    const selectedSlug = state.selectedLocation?.slug || "";
+    const placeholderOption = selectedSlug ? "" : `<option value="" selected>Select a location</option>`;
+    const locationOptions = placeholderOption + locations().map((location) => `<option value="${escapeHtml(location.name)}"${location.slug === selectedSlug ? " selected" : ""}>${escapeHtml(location.name)}</option>`).join("");
     panel.innerHTML = `
       <article class="detail request-modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
         <header class="detail-header">
