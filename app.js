@@ -282,9 +282,26 @@
     const closeButton = panel.querySelector(".close");
     const status = panel.querySelector(".request-status");
     form?.querySelector("input")?.focus();
-    form?.addEventListener("submit", (event) => {
+    form?.addEventListener("submit", async (event) => {
       event.preventDefault();
-      status.textContent = "Request form is ready. Power Automate connection has not been added yet.";
+      const submitButton = form.querySelector("button[type='submit']");
+      const data = Object.fromEntries(new FormData(form).entries());
+      status.textContent = "Sending request...";
+      submitButton.disabled = true;
+      try {
+        const response = await fetch(config.NEW_CHEMICAL_REQUEST_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        status.textContent = "Request sent. The SDS owner will receive it in Teams.";
+        form.reset();
+      } catch (error) {
+        status.textContent = "Request could not be sent. Check the Power Automate trigger permissions and try again.";
+      } finally {
+        submitButton.disabled = false;
+      }
     });
     closeButton?.addEventListener("click", () => panel.remove());
     panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); });
