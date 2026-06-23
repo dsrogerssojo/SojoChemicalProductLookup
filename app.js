@@ -264,7 +264,7 @@
     panel.innerHTML = `
       <article class="detail request-modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
         <header class="detail-header">
-          <div><p class="eyebrow">New chemical request</p><h2 id="requestTitle">Request SDS Addition</h2><p>Submit a product for review by the location SDS owner.</p></div>
+          <div><p class="eyebrow">New chemical request</p><h2 id="requestTitle">Request SDS Addition</h2></div>
           <div class="detail-actions"><button class="close" type="button" aria-label="Close">Close</button></div>
         </header>
         <form class="request-form">
