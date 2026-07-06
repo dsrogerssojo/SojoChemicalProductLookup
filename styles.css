@@ -524,8 +524,7 @@ a {
   flex-shrink: 0;
 }
 
-.close,
-.print-record {
+.close {
   min-height: 46px;
   border-radius: 14px;
   padding: .65rem 1rem;
@@ -539,17 +538,25 @@ a {
   color: var(--text);
 }
 
-.print-record {
-  border: 0;
-  background: #f3f4f6;
-  color: #06070d;
-}
-
 .detail-body {
   padding: 1.25rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+}
+
+.langhorne-detail-grid {
+  align-items: stretch;
+}
+
+.langhorne-detail .info-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.langhorne-detail .link-button {
+  margin-top: auto;
+  width: fit-content;
 }
 
 .info-block {
@@ -855,8 +862,7 @@ a {
   .hero,
   .search-shell,
   .footer,
-  .close,
-  .print-record {
+  .close {
     display: none !important;
   }
 

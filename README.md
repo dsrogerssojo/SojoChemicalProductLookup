@@ -52,6 +52,7 @@ The site uses plain HTML, CSS, and JavaScript. There is no build step.
 ## Power Automate
 
 Power Automate setup is documented in `docs/power-automate.md`.
+Langhorne-specific setup is documented in `docs/langhorne-sds-system.md`.
 
 Use these GitHub API content paths:
 

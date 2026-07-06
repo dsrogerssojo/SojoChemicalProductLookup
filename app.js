@@ -170,9 +170,15 @@
       if (!value || headerIndex === sdsLinkIndex) return null;
       return [clean(rawHeaders[headerIndex]) || titleCase(header), value];
     }).filter(Boolean);
+    const rawFields = rawHeaders.reduce((fields, rawHeader, headerIndex) => {
+      const label = clean(rawHeader) || titleCase(headers[headerIndex]);
+      const value = clean(row[headerIndex]);
+      if (label && value) fields[label] = value;
+      return fields;
+    }, {});
     const displayFields = extraFields;
     const name = get("name"); const company = get("company"); const productCode = get("productCode"); const hfrp = get("hfrp"); const sdsLink = normalizeLink(get("sdsLink")); const location = currentLocation().name; const use = get("use"); const composition = get("composition"); const sdsNumber = get("sdsNumber"); const storageLocation = get("storageLocation"); const sdsAvailable = get("sdsAvailable"); const approvedBy = get("approvedBy"); const lastReviewDate = formatExcelDate(get("lastReviewDate"));
-    return { id: slug([name, company, productCode, location, index].filter(Boolean).join("-")), name, company, productCode, use, sdsNumber, version: get("version"), issueDate: formatExcelDate(get("issueDate")), revisionDate: formatExcelDate(get("revisionDate")), supersedesDate: formatExcelDate(get("supersedesDate")), storageLocation, sdsAvailable, approvedBy, lastReviewDate, composition, hfrp, sdsLink, location, extraFields, displayFields, searchable: [name, company, productCode, use, sdsNumber, storageLocation, sdsAvailable, approvedBy, lastReviewDate, composition, hfrp, sdsLink, location, ...displayFields.flat()].join(" ").toLowerCase() };
+    return { id: slug([name, company, productCode, location, index].filter(Boolean).join("-")), name, company, productCode, use, sdsNumber, version: get("version"), issueDate: formatExcelDate(get("issueDate")), revisionDate: formatExcelDate(get("revisionDate")), supersedesDate: formatExcelDate(get("supersedesDate")), storageLocation, sdsAvailable, approvedBy, lastReviewDate, composition, hfrp, sdsLink, location, rawFields, extraFields, displayFields, searchable: [name, company, productCode, use, sdsNumber, storageLocation, sdsAvailable, approvedBy, lastReviewDate, composition, hfrp, sdsLink, location, ...displayFields.flat()].join(" ").toLowerCase() };
   }
 
   function clean(value) { const text = String(value ?? "").replace(/\s+/g, " ").trim(); return text && text.toLowerCase() !== "undefined" ? text : ""; }
@@ -252,8 +258,37 @@
 
   function showDetail(record) {
     const panel = document.createElement("div"); panel.className = "detail-backdrop";
-    panel.innerHTML = `<article class="detail" role="dialog" aria-modal="true"><header class="detail-header"><div><p class="eyebrow">SDS record</p><h2>${escapeHtml(record.name)}</h2><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p></div><div class="detail-actions"><button class="print-record" type="button">Print</button><button class="close" type="button" aria-label="Close">Close</button></div></header><div class="detail-body"><section class="info-block"><h3>Spreadsheet Fields</h3>${definitionList(record.displayFields)}</section><section class="info-block"><h3>SDS Link</h3>${record.sdsLink && /^https?:\/\//i.test(record.sdsLink) ? `<a class="link-button" href="${escapeHtml(record.sdsLink)}" target="_blank" rel="noreferrer">Open SDS</a>` : `<p>No web SDS link is available in the data feed.</p>`}</section></div></article>`;
-    document.body.appendChild(panel); const closeButton = panel.querySelector(".close"); const printButton = panel.querySelector(".print-record"); closeButton?.focus(); printButton?.addEventListener("click", () => window.print()); closeButton?.addEventListener("click", () => panel.remove()); panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); }); document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
+    panel.innerHTML = currentLocation().slug === "langhorne-pa" ? langhorneDetailTemplate(record) : genericDetailTemplate(record);
+    document.body.appendChild(panel); const closeButton = panel.querySelector(".close"); closeButton?.focus(); closeButton?.addEventListener("click", () => panel.remove()); panel.addEventListener("click", (event) => { if (event.target === panel) panel.remove(); }); document.addEventListener("keydown", function escapeHandler(event) { if (event.key === "Escape") { panel.remove(); document.removeEventListener("keydown", escapeHandler); } });
+  }
+
+  function genericDetailTemplate(record) {
+    return `<article class="detail" role="dialog" aria-modal="true"><header class="detail-header"><div><p class="eyebrow">SDS record</p><h2>${escapeHtml(record.name)}</h2><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p></div><div class="detail-actions"><button class="close" type="button" aria-label="Close">Close</button></div></header><div class="detail-body"><section class="info-block"><h3>Spreadsheet Fields</h3>${definitionList(record.displayFields)}</section><section class="info-block"><h3>SDS Link</h3>${sdsLinkTemplate(record)}</section></div></article>`;
+  }
+
+  function langhorneDetailTemplate(record) {
+    const productRows = [
+      ["Product Name", record.name],
+      ["Company Name", record.company],
+      ["Product Code", record.productCode],
+      ["Use", record.use]
+    ];
+    const sdsRows = [
+      ["SDS #", record.sdsNumber],
+      ["Version #", record.version],
+      ["Issue Date", record.issueDate],
+      ["Revision Date", record.revisionDate],
+      ["Supersedes Date", record.supersedesDate]
+    ];
+    const safetyRows = [
+      ["HAZMAT Chemical Composition", record.composition],
+      ["HFRP Info", record.hfrp]
+    ];
+    return `<article class="detail langhorne-detail" role="dialog" aria-modal="true"><header class="detail-header"><div><p class="eyebrow">Langhorne SDS record</p><h2>${escapeHtml(record.name)}</h2><p>${escapeHtml([record.company, record.productCode ? `Code ${record.productCode}` : "", record.use].filter(Boolean).join(" - "))}</p></div><div class="detail-actions"><button class="close" type="button" aria-label="Close">Close</button></div></header><div class="detail-body langhorne-detail-grid"><section class="info-block"><h3>Product Information</h3>${definitionList(productRows)}</section><section class="info-block"><h3>SDS Document Details</h3>${definitionList(sdsRows)}</section><section class="info-block"><h3>Safety Reference</h3>${definitionList(safetyRows)}</section><section class="info-block"><h3>Official SDS</h3>${sdsLinkTemplate(record)}</section></div></article>`;
+  }
+
+  function sdsLinkTemplate(record) {
+    return record.sdsLink && /^https?:\/\//i.test(record.sdsLink) ? `<a class="link-button" href="${escapeHtml(record.sdsLink)}" target="_blank" rel="noreferrer">Open SDS</a>` : `<p>No web SDS link is available in the data feed.</p>`;
   }
 
   function showChemicalRequestForm() {
