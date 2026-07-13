@@ -11,6 +11,7 @@ Langhorne - PA  -> data/langhorne-pa.csv
 Whiteland - IN  -> data/whiteland-in.csv
 Temple - TX     -> data/temple-tx.csv
 Redlands - CA   -> data/redlands-ca.csv
+Flight          -> data/flight.csv
 ```
 
 Each CSV is updated by a location-specific Power Automate flow from that location's SharePoint Excel workbook.
@@ -61,6 +62,7 @@ contents/data/langhorne-pa.csv
 contents/data/whiteland-in.csv
 contents/data/temple-tx.csv
 contents/data/redlands-ca.csv
+contents/data/flight.csv
 ```
 
 ## New Chemical Requests

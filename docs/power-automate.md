@@ -21,6 +21,7 @@ Langhorne - PA  -> data/langhorne-pa.csv
 Whiteland - IN  -> data/whiteland-in.csv
 Temple - TX     -> data/temple-tx.csv
 Redlands - CA   -> data/redlands-ca.csv
+Flight          -> data/flight.csv
 ```
 
 Use one flow per location. Each flow should update only its matching CSV file.

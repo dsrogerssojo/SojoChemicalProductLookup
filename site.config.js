@@ -22,6 +22,11 @@ window.SOJO_LOOKUP_CONFIG = {
       name: "Redlands - CA",
       slug: "redlands-ca",
       csvSourcePath: "data/redlands-ca.csv"
+    },
+    {
+      name: "Flight",
+      slug: "flight",
+      csvSourcePath: "data/flight.csv"
     }
   ]
 };
